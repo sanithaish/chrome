@@ -1,0 +1,956 @@
+/* Authentic iOS Apple Calculator Design System */
+:root {
+  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", Consolas, monospace;
+
+  /* Dimensions */
+  --popup-width: 330px;
+  --popup-height: 540px;
+  --radius-btn: 9999px;
+  --radius-card: 16px;
+
+
+
+  /* Default iOS Dark Palette (Matching Apple Calculator) */
+  --bg-app: #000000;
+  --bg-card: #000000;
+  --bg-surface: #1c1c1e;
+  --bg-surface-hover: #2c2c2e;
+  --bg-display: #000000;
+  --text-display-expr: #8e8e93;
+  --text-display-res: #ffffff;
+
+  --text-main: #ffffff;
+  --text-muted: #8e8e93;
+  --text-inverse: #000000;
+
+  --border-color: rgba(255, 255, 255, 0.12);
+  --border-focus: #ff9f0a;
+
+  /* Number Buttons (Dark Gray) */
+  --btn-num-bg: #333333;
+  --btn-num-text: #ffffff;
+  --btn-num-hover: #48484a;
+  --btn-num-active: #737373;
+  
+  /* Top Function Row (Light Gray) */
+  --btn-sec-bg: #a5a5a5;
+  --btn-sec-text: #000000;
+  --btn-sec-hover: #d1d1d6;
+  --btn-sec-active: #e5e5ea;
+
+  /* Operator Buttons (Apple Orange) */
+  --btn-op-bg: #ff9f0a;
+  --btn-op-text: #ffffff;
+  --btn-op-hover: #ffb340;
+  --btn-op-active: #fcc882;
+
+  --btn-eq-bg: #ff9f0a;
+  --btn-eq-text: #ffffff;
+  --btn-eq-hover: #ffb340;
+  --btn-eq-shadow: 0 2px 10px rgba(255, 159, 10, 0.3);
+
+  --btn-danger-bg: #a5a5a5;
+  --btn-danger-text: #000000;
+  --btn-danger-hover: #d1d1d6;
+
+  --accent-color: #ff9f0a;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.8);
+
+  --transition-fast: 0.12s ease;
+  --transition-normal: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Explicit Light Mode Palette (iOS Light Theme) */
+body[data-theme="light"] {
+  --bg-app: #f2f2f7;
+  --bg-card: #f2f2f7;
+  --bg-surface: #e5e5ea;
+  --bg-surface-hover: #d1d1d6;
+  --bg-display: #f2f2f7;
+  --text-display-expr: #8e8e93;
+  --text-display-res: #000000;
+
+  --text-main: #000000;
+  --text-muted: #8e8e93;
+  --text-inverse: #ffffff;
+
+  --border-color: rgba(0, 0, 0, 0.1);
+  --border-focus: #ff9f0a;
+
+  --btn-num-bg: #ffffff;
+  --btn-num-text: #000000;
+  --btn-num-hover: #e5e5ea;
+  --btn-num-active: #c7c7cc;
+
+  --btn-sec-bg: #d1d1d6;
+  --btn-sec-text: #000000;
+  --btn-sec-hover: #e5e5ea;
+  --btn-sec-active: #ffffff;
+
+  --btn-op-bg: #ff9f0a;
+  --btn-op-text: #ffffff;
+  --btn-op-hover: #ffb340;
+  --btn-op-active: #fcc882;
+
+  --btn-eq-bg: #ff9f0a;
+  --btn-eq-text: #ffffff;
+  --btn-eq-hover: #ffb340;
+  --btn-eq-shadow: 0 2px 8px rgba(255, 159, 10, 0.25);
+
+  --btn-danger-bg: #d1d1d6;
+  --btn-danger-text: #000000;
+  --btn-danger-hover: #e5e5ea;
+}
+
+/* System Dark Mode Detection */
+@media (prefers-color-scheme: dark) {
+  body[data-theme="system"] {
+    --bg-app: #000000;
+    --bg-card: #000000;
+    --bg-surface: #1c1c1e;
+    --bg-surface-hover: #2c2c2e;
+    --bg-display: #000000;
+    --text-display-expr: #8e8e93;
+    --text-display-res: #ffffff;
+
+    --text-main: #ffffff;
+    --text-muted: #8e8e93;
+    --text-inverse: #000000;
+
+    --border-color: rgba(255, 255, 255, 0.12);
+    --border-focus: #ff9f0a;
+
+    --btn-num-bg: #333333;
+    --btn-num-text: #ffffff;
+    --btn-num-hover: #48484a;
+    --btn-num-active: #737373;
+
+    --btn-sec-bg: #a5a5a5;
+    --btn-sec-text: #000000;
+    --btn-sec-hover: #d1d1d6;
+    --btn-sec-active: #e5e5ea;
+
+    --btn-op-bg: #ff9f0a;
+    --btn-op-text: #ffffff;
+    --btn-op-hover: #ffb340;
+    --btn-op-active: #fcc882;
+
+    --btn-eq-bg: #ff9f0a;
+    --btn-eq-text: #ffffff;
+    --btn-eq-hover: #ffb340;
+    --btn-eq-shadow: 0 2px 10px rgba(255, 159, 10, 0.3);
+
+    --btn-danger-bg: #a5a5a5;
+    --btn-danger-text: #000000;
+    --btn-danger-hover: #d1d1d6;
+  }
+}
+
+/* Global Reset & Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html, body {
+  width: var(--popup-width);
+  height: var(--popup-height);
+  font-family: var(--font-family);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  overflow: hidden !important;
+  position: relative;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+
+/* Keyboard accessibility outline */
+button:focus-visible, input:focus-visible, [tabindex="0"]:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Main iOS App Frame */
+.app-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-card);
+  position: relative;
+  overflow: hidden;
+}
+
+/* iOS Header Header Component */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background-color: var(--bg-card);
+  z-index: 5;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.icon-btn:hover {
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+}
+
+.theme-icon {
+  display: none;
+}
+body[data-theme="light"] .moon-icon { display: block; }
+body[data-theme="dark"] .sun-icon { display: block; }
+body[data-theme="system"] .sun-icon { display: block; }
+
+.history-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: var(--accent-color);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: var(--radius-btn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+/* iOS Status Controls & Segmented Tab */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 16px 8px 16px;
+  background-color: var(--bg-card);
+}
+
+.mode-tabs {
+  display: flex;
+  background-color: var(--bg-surface);
+  padding: 3px;
+  border-radius: var(--radius-btn);
+  gap: 2px;
+}
+
+.mode-tab {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mode-tab.active {
+  background-color: #3a3a3c;
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+body[data-theme="light"] .mode-tab.active {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.indicators {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.indicator {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-btn);
+  letter-spacing: 0.04em;
+}
+
+.memory-indicator {
+  background-color: rgba(255, 159, 10, 0.2);
+  color: var(--accent-color);
+  border: 1px solid rgba(255, 159, 10, 0.4);
+}
+
+.angle-btn {
+  background-color: var(--bg-surface);
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.angle-btn:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+/* Display Screen (iOS Style) */
+.display-container {
+  padding: 6px 16px 10px 16px;
+  background-color: var(--bg-display);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 95px;
+  position: relative;
+}
+
+.expression-display {
+  font-size: 1.25rem;
+  font-family: var(--font-family);
+  color: var(--text-display-expr);
+  min-height: 26px;
+  text-align: right;
+  word-break: break-all;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  font-weight: 500;
+}
+.expression-display::-webkit-scrollbar { display: none; }
+
+.result-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.result-display {
+  font-size: 2.85rem;
+  font-weight: 300;
+  font-family: var(--font-family);
+  color: var(--text-display-res);
+  text-align: right;
+  width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.result-display::-webkit-scrollbar { display: none; }
+
+.copy-result-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+.copy-result-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* Toast Message */
+.toast {
+  position: absolute;
+  top: 125px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background-color: rgba(44, 44, 46, 0.95);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: var(--radius-btn);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 100;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Keypad Section (iOS Button Grid - Zero Scroll) */
+.keypad-section {
+  flex: 1;
+  padding: 8px 14px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: var(--bg-card);
+  overflow: hidden;
+}
+
+
+/* Memory Buttons Grid */
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+/* Button Base Styles (Circular / Rounded Pill iOS Style) */
+.btn {
+  border: none;
+  font-family: var(--font-family);
+  font-size: 1.4rem;
+  font-weight: 500;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  transition: opacity var(--transition-fast), transform var(--transition-fast), background-color var(--transition-fast);
+  box-shadow: none;
+}
+
+.btn:active {
+  opacity: 0.7;
+  transform: scale(0.96);
+}
+
+.btn-mem {
+  height: 28px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background-color: var(--bg-surface);
+  color: var(--accent-color);
+  padding: 0;
+}
+.btn-mem:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+/* Scientific Grid */
+.scientific-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+}
+
+.btn-sci {
+  height: 30px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border-radius: var(--radius-btn);
+}
+.btn-sci:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+/* Basic Grid (Authentic 4-Column Apple Calculator Grid) */
+.basic-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  flex: 1;
+}
+
+/* Double-width 0 Button (Apple Calculator Style) */
+.btn-zero {
+  grid-column: span 2;
+  justify-content: flex-start;
+  padding-left: 24px;
+}
+
+/* Scientific Mode Proportional Sizing (Exact iOS Scientific Layout) */
+body[data-mode="scientific"] {
+  height: 600px !important;
+}
+
+body[data-mode="scientific"] .display-container {
+  min-height: 65px;
+  padding: 2px 14px 2px 14px;
+}
+
+body[data-mode="scientific"] .expression-display {
+  font-size: 1.05rem;
+  min-height: 20px;
+}
+
+body[data-mode="scientific"] .result-display {
+  font-size: 2.15rem;
+}
+
+body[data-mode="scientific"] .keypad-section {
+  gap: 4px;
+  padding: 4px 10px 26px 10px;
+  overflow: hidden !important;
+}
+
+
+
+body[data-mode="scientific"] .scientific-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+  margin-bottom: 4px;
+}
+
+body[data-mode="scientific"] .btn-sci,
+body[data-mode="scientific"] .btn-sci-sm {
+  height: 28px;
+  font-size: 12px !important;
+  font-weight: 500;
+  background-color: #212124;
+  color: #ffffff;
+  border-radius: var(--radius-btn);
+}
+
+body[data-mode="scientific"] .btn-sci:hover {
+  background-color: #3a3a3c;
+}
+
+body[data-mode="scientific"] .btn-sci.active {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+body[data-mode="scientific"] .btn-sci sub, 
+body[data-mode="scientific"] .btn-sci sup {
+  font-size: 9px;
+}
+
+
+
+
+
+
+body[data-mode="scientific"] .basic-grid {
+  gap: 5px;
+}
+
+body[data-mode="scientific"] .btn {
+  height: 38px;
+  font-size: 1.15rem;
+}
+
+/* App Footer Credit (Italics Right-Aligned) */
+.app-credit {
+  text-align: right;
+  font-size: 0.65rem;
+  font-style: italic;
+  color: var(--text-muted);
+  opacity: 0.75;
+  padding-top: 4px;
+  pointer-events: none;
+}
+
+
+
+
+
+
+
+
+/* Number Buttons (Dark Gray / White in Light Mode) */
+.btn-num {
+  background-color: var(--btn-num-bg);
+  color: var(--btn-num-text);
+}
+.btn-num:hover {
+  background-color: var(--btn-num-hover);
+}
+.btn-num:active {
+  background-color: var(--btn-num-active);
+}
+
+/* Top Function Row (Light Gray) */
+.btn-secondary, .btn-danger {
+  background-color: var(--btn-sec-bg);
+  color: var(--btn-sec-text);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.btn-secondary:hover, .btn-danger:hover {
+  background-color: var(--btn-sec-hover);
+}
+.btn-secondary:active, .btn-danger:active {
+  background-color: var(--btn-sec-active);
+}
+
+/* Operator Column (Apple Orange) */
+.btn-operator, .btn-equals {
+  background-color: var(--btn-op-bg);
+  color: var(--btn-op-text);
+  font-size: 1.45rem;
+  font-weight: 500;
+}
+.btn-operator:hover, .btn-equals:hover {
+  background-color: var(--btn-op-hover);
+}
+.btn-operator:active, .btn-equals:active {
+  background-color: var(--btn-op-active);
+}
+
+/* App Footer Bar */
+.app-footer {
+  display: flex;
+  gap: 8px;
+  padding: 8px 14px;
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border-color);
+}
+
+.footer-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 7px;
+  border-radius: var(--radius-btn);
+  background-color: var(--bg-surface);
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.footer-btn:hover {
+  background-color: var(--bg-surface-hover);
+  color: var(--accent-color);
+}
+
+/* History Drawer (iOS Bottom Sheet / Overlay Panel) */
+.history-drawer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-card);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform var(--transition-normal);
+}
+
+.history-drawer:not([hidden]) {
+  transform: translateX(0);
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.history-header h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.history-search-container {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+}
+
+.history-search-container input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-btn);
+  border: none;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  font-family: var(--font-family);
+}
+
+.history-filters {
+  display: flex;
+  padding: 8px 12px;
+  gap: 6px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  scrollbar-width: none;
+}
+.history-filters::-webkit-scrollbar { display: none; }
+
+.filter-tab {
+  border: none;
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-tab.active {
+  background-color: var(--accent-color);
+  color: #ffffff;
+}
+
+/* History Scroll List (iOS List Style) */
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-item {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-card);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.history-item:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+.history-item.pinned {
+  border-left: 4px solid var(--accent-color);
+}
+
+.history-item-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.history-item-expr {
+  word-break: break-all;
+}
+
+.history-item-res {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.history-item-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.history-item-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.history-action-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+}
+
+.history-action-btn:hover {
+  color: var(--text-main);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.history-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* History Footer Controls */
+.history-footer {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-footer-row {
+  display: flex;
+  gap: 6px;
+}
+
+.drawer-btn {
+  flex: 1;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 7px;
+  border-radius: var(--radius-btn);
+  border: none;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.drawer-btn:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+.danger-drawer-btn {
+  background-color: rgba(255, 59, 48, 0.2);
+  color: #ff453a;
+}
+.danger-drawer-btn:hover {
+  background-color: rgba(255, 59, 48, 0.35);
+}
+
+/* Modal Confirmation Backdrop (iOS Alert Card) */
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-backdrop[hidden] {
+  display: none !important;
+}
+
+.modal-card {
+  background-color: rgba(44, 44, 46, 0.95);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 250px;
+  text-align: center;
+}
+
+.modal-card h3 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.modal-card p {
+  font-size: 0.72rem;
+  color: #8e8e93;
+  line-height: 1.35;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btn-secondary-modal,
+.btn-danger-modal {
+  flex: 1;
+  font-size: 11px !important;
+  height: 28px !important;
+  padding: 0 10px !important;
+  font-weight: 600;
+  border-radius: var(--radius-btn);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--transition-fast);
+}
+
+.btn-secondary-modal {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.btn-danger-modal {
+  background-color: #ff453a;
+  color: #ffffff;
+}
+
+.btn-secondary-modal:active,
+.btn-danger-modal:active {
+  opacity: 0.7;
+}
+
+
+

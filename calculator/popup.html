@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Calculator</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body data-theme="system" data-mode="basic">
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <svg class="app-icon" viewBox="0 0 24 24" width="22" height="22" fill="none">
+          <clipPath id="squircle-clip"><rect x="1" y="1" width="22" height="22" rx="5"/></clipPath>
+          <g clip-path="url(#squircle-clip)">
+            <!-- Top-Left: Golden Yellow (+) -->
+            <rect x="1" y="1" width="11" height="11" fill="#f1b810"/>
+            <path d="M6.5 4v5M4 6.5h5" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round"/>
+            <!-- Top-Right: Dark Orange (-) -->
+            <rect x="12" y="1" width="11" height="11" fill="#ea7e1e"/>
+            <path d="M15 6.5h5" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round"/>
+            <!-- Bottom-Left: Medium Orange (×) -->
+            <rect x="1" y="12" width="11" height="11" fill="#f08920"/>
+            <path d="M4.5 14.5l4 4M8.5 14.5l-4 4" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round"/>
+            <!-- Bottom-Right: Slate Blue (=) -->
+            <rect x="12" y="12" width="11" height="11" fill="#4f5e82"/>
+            <path d="M15 15.5h5M15 18.5h5" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round"/>
+          </g>
+        </svg>
+        <span class="app-title">Calculator</span>
+
+
+      </div>
+
+      <div class="header-controls">
+        <button id="theme-toggle" class="icon-btn" title="Toggle Theme (Light / Dark / System)" aria-label="Toggle Theme">
+          <svg class="theme-icon sun-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="theme-icon moon-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+
+        <button id="history-toggle" class="icon-btn history-btn" title="View History" aria-label="Open History">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"/>
+            <polyline points="12 7 12 12 15 15"/>
+          </svg>
+          <span id="history-badge" class="history-badge" hidden>0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Sub-header Status Controls -->
+    <div class="status-bar">
+      <div class="mode-tabs" role="tablist">
+        <button id="mode-basic-btn" class="mode-tab active" role="tab" aria-selected="true" data-mode="basic">Basic</button>
+        <button id="mode-sci-btn" class="mode-tab" role="tab" aria-selected="false" data-mode="scientific">Scientific</button>
+      </div>
+
+      <div class="indicators">
+        <span id="memory-indicator" class="indicator memory-indicator" title="Memory In Use" hidden>M</span>
+        <button id="angle-mode-btn" class="indicator angle-btn" title="Toggle Angle Unit (DEG/RAD)" hidden>DEG</button>
+      </div>
+    </div>
+
+    <!-- Main Display Section -->
+    <main class="display-container" id="display-container">
+      <div id="expression-display" class="expression-display" tabIndex="0" aria-label="Current expression"></div>
+      <div class="result-row">
+        <div id="result-display" class="result-display" tabIndex="0" aria-label="Calculation result">0</div>
+        <button id="copy-result-btn" class="copy-result-btn" title="Copy result to clipboard" aria-label="Copy result">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+        </button>
+      </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast" role="status" aria-live="polite">Copied to clipboard!</div>
+
+    <!-- Keypads Section -->
+    <section class="keypad-section">
+      <!-- Scientific Grid (5 Rows x 6 Columns - Matches iOS Screenshot) -->
+      <div id="scientific-grid" class="scientific-grid" hidden>
+        <!-- Row 1 -->
+        <button class="btn btn-sci" data-action="paren" data-value="(">(</button>
+        <button class="btn btn-sci" data-action="paren" data-value=")">)</button>
+        <button class="btn btn-sci" data-action="mc">mc</button>
+        <button class="btn btn-sci" data-action="m-plus">m+</button>
+        <button class="btn btn-sci" data-action="m-minus">m-</button>
+        <button class="btn btn-sci" data-action="mr">mr</button>
+
+        <!-- Row 2 -->
+        <button class="btn btn-sci" data-action="2nd" id="btn-2nd">2<sup>nd</sup></button>
+        <button class="btn btn-sci" data-action="operator" data-value="^2">x²</button>
+        <button class="btn btn-sci" data-action="operator" data-value="^3">x³</button>
+        <button class="btn btn-sci" data-action="operator" data-value="^">xʸ</button>
+        <button class="btn btn-sci" data-action="func" data-value="exp">e<sup>x</sup></button>
+        <button class="btn btn-sci btn-sci-sm" data-action="func" data-value="pow10">10<sup>x</sup></button>
+
+        <!-- Row 3 -->
+        <button class="btn btn-sci" data-action="reciprocal" data-value="1/x">¹/x</button>
+        <button class="btn btn-sci" data-action="func" data-value="sqrt">²√x</button>
+        <button class="btn btn-sci" data-action="func" data-value="cbrt">³√x</button>
+        <button class="btn btn-sci btn-sci-sm" data-action="func" data-value="sqrt">ʸ√x</button>
+        <button class="btn btn-sci" data-action="func" data-value="ln">ln</button>
+        <button class="btn btn-sci btn-sci-sm" data-action="func" data-value="log">log<sub>10</sub></button>
+
+        <!-- Row 4 -->
+        <button class="btn btn-sci" data-action="factorial" data-value="!">x!</button>
+        <button class="btn btn-sci" data-action="func" data-value="sin" id="btn-sin">sin</button>
+        <button class="btn btn-sci" data-action="func" data-value="cos" id="btn-cos">cos</button>
+        <button class="btn btn-sci" data-action="func" data-value="tan" id="btn-tan">tan</button>
+        <button class="btn btn-sci" data-action="constant" data-value="e">e</button>
+        <button class="btn btn-sci" data-action="operator" data-value="e">EE</button>
+
+        <!-- Row 5 -->
+        <button class="btn btn-sci btn-sci-sm" data-action="rand">Rand</button>
+        <button class="btn btn-sci btn-sci-sm" data-action="func" data-value="sinh">sinh</button>
+        <button class="btn btn-sci btn-sci-sm" data-action="func" data-value="cosh">cosh</button>
+        <button class="btn btn-sci btn-sci-sm" data-action="func" data-value="tanh">tanh</button>
+        <button class="btn btn-sci" data-action="constant" data-value="π">π</button>
+        <button class="btn btn-sci btn-angle-toggle" id="sci-angle-btn">Deg</button>
+
+      </div>
+
+      <!-- Basic Keypad Grid (Authentic Apple Calculator 4-Column Alignment) -->
+      <div class="basic-grid">
+        <!-- Row 1 -->
+        <button class="btn btn-secondary" data-action="backspace" title="Backspace (⌫)">⌫</button>
+        <button class="btn btn-danger" data-action="clear" title="Clear (Escape)">AC</button>
+        <button class="btn btn-secondary" data-action="operator" data-value="%" title="Percentage">%</button>
+        <button class="btn btn-operator" data-action="operator" data-value="÷" title="Division (/)">÷</button>
+
+        <!-- Row 2 -->
+        <button class="btn btn-num" data-action="digit" data-value="7">7</button>
+        <button class="btn btn-num" data-action="digit" data-value="8">8</button>
+        <button class="btn btn-num" data-action="digit" data-value="9">9</button>
+        <button class="btn btn-operator" data-action="operator" data-value="×" title="Multiplication (*)">×</button>
+
+        <!-- Row 3 -->
+        <button class="btn btn-num" data-action="digit" data-value="4">4</button>
+        <button class="btn btn-num" data-action="digit" data-value="5">5</button>
+        <button class="btn btn-num" data-action="digit" data-value="6">6</button>
+        <button class="btn btn-operator" data-action="operator" data-value="−" title="Subtraction (-)">−</button>
+
+        <!-- Row 4 -->
+        <button class="btn btn-num" data-action="digit" data-value="1">1</button>
+        <button class="btn btn-num" data-action="digit" data-value="2">2</button>
+        <button class="btn btn-num" data-action="digit" data-value="3">3</button>
+        <button class="btn btn-operator" data-action="operator" data-value="+" title="Addition (+)">+</button>
+
+        <!-- Row 5 -->
+        <button class="btn btn-num" data-action="negate" title="Positive / Negative Toggle">⁺/₋</button>
+        <button class="btn btn-num" data-action="digit" data-value="0">0</button>
+        <button class="btn btn-num" data-action="decimal" data-value="." title="Decimal point">.</button>
+        <button class="btn btn-equals" data-action="equals" title="Calculate (Enter)">=</button>
+      </div>
+
+      <!-- Footer Branding Credit -->
+      <footer class="app-credit">
+        <em>Crafted by Sanith</em>
+      </footer>
+    </section>
+
+
+    <!-- History Drawer (Overlay/Slide-in Panel) -->
+    <aside id="history-drawer" class="history-drawer" aria-label="Calculation History" hidden>
+      <div class="history-header">
+        <div class="history-title-group">
+          <h2>History</h2>
+        </div>
+        <button id="close-history-btn" class="icon-btn" title="Close history drawer" aria-label="Close history">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Search Box -->
+      <div class="history-search-container">
+        <input type="search" id="history-search-input" placeholder="🔍 Search expression or result..." aria-label="Search calculation history">
+      </div>
+
+      <!-- Date / Filter Tabs -->
+      <div class="history-filters" role="tablist">
+        <button class="filter-tab active" data-filter="all">All</button>
+        <button class="filter-tab" data-filter="today">Today</button>
+        <button class="filter-tab" data-filter="week">This Week</button>
+        <button class="filter-tab" data-filter="pinned">⭐ Pinned</button>
+      </div>
+
+      <!-- History Items List -->
+      <div id="history-list" class="history-list" tabindex="0">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- History Management Actions Footer -->
+      <div class="history-footer">
+        <button id="clear-history-btn" class="drawer-btn danger-drawer-btn" title="Clear history">🗑 Clear All</button>
+      </div>
+    </aside>
+
+
+    <!-- Clear Confirmation Modal -->
+    <div id="confirm-modal" class="modal-backdrop" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <h3 id="modal-title">Clear Calculation History?</h3>
+        <p>Are you sure you want to delete all stored history entries? This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button id="cancel-clear-btn" class="btn-secondary-modal">Cancel</button>
+          <button id="confirm-clear-btn" class="btn-danger-modal">Clear History</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
