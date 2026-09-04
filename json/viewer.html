@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Beautifier & Viewer</title>
+  <link rel="stylesheet" href="viewer.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="top-bar">
+      <div class="brand">
+        <div class="brand-icon">{ }</div>
+        <div class="brand-title">
+          <h1>JSON Beautifier</h1>
+          <span class="brand-subtitle">Dual Independent Inspector & Comparator</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Layout Mode Toggles -->
+        <div class="layout-toggles">
+          <button id="btnLayoutSplit" class="btn-layout active" title="Split View (Left & Right)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+            Split
+          </button>
+          <button id="btnLayoutLeft" class="btn-layout" title="Left Pane Only">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="3" y="3" width="9" height="18"/></svg>
+            Left
+          </button>
+          <button id="btnLayoutRight" class="btn-layout" title="Right Pane Only">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="12" y="3" width="9" height="18"/></svg>
+            Right
+          </button>
+        </div>
+
+        <!-- Sync Both Panes Toggle -->
+        <button id="btnSyncPanesToggle" class="btn btn-secondary btn-sm sync-panes-btn" title="Toggle Auto-Sync Actions to Both Panes (ON / OFF)">
+          <span class="sync-icon">⚡</span>
+          <span class="sync-label">Sync Both: OFF</span>
+        </button>
+
+        <!-- Compare Button -->
+        <button id="btnCompareJSON" class="btn btn-accent btn-sm header-compare-btn" title="Compare Left and Right JSON Payloads">
+          ⚖️ Compare JSON
+        </button>
+
+        <button id="btnThemeToggle" class="icon-btn" title="Toggle Theme (Dark / Light)">
+          <span class="theme-icon">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Global Top Loading Progress Bar -->
+    <div id="topProgressBar" class="top-progress-bar hidden">
+      <div id="topProgressBarFill" class="progress-bar-fill"></div>
+    </div>
+
+    <!-- Diff Summary Bar -->
+    <div id="diffSummaryBar" class="diff-summary-bar hidden">
+      <div class="diff-summary-info">
+        <span class="diff-title">⚖️ JSON Comparison:</span>
+        <span id="diffStatsAdded" class="diff-chip chip-added">+ 0 Added</span>
+        <span id="diffStatsRemoved" class="diff-chip chip-removed">- 0 Removed</span>
+        <span id="diffStatsModified" class="diff-chip chip-modified">~ 0 Modified</span>
+      </div>
+      <button id="btnClearDiff" class="btn btn-secondary btn-xs">Clear Diff</button>
+    </div>
+
+    <!-- Main Dual Split Content Area (Left and Right Sections) -->
+    <main class="main-split-container" id="mainSplitContainer">
+      
+      <!-- LEFT SECTION / PANE -->
+      <section class="pane-section pane-left" id="paneLeft">
+        <!-- Left Drag & Drop Overlay -->
+        <div class="drag-drop-overlay" id="dragOverlayLeft">
+          <div class="drag-drop-message">
+            <span class="drag-icon">📥</span>
+            <h3>Drop JSON File Here</h3>
+            <p>Release to open & beautify in Left Pane</p>
+          </div>
+        </div>
+
+        <!-- Left Section Header -->
+        <div class="pane-header">
+          <div class="pane-title">
+            <span class="pane-badge left-badge">LEFT PANE</span>
+          </div>
+          <div class="pane-tabs left-tabs">
+            <button id="tabLeftTree" class="pane-tab">🌳 Tree</button>
+            <button id="tabLeftEditor" class="pane-tab active">✏️ Editor</button>
+            <button id="tabLeftRaw" class="pane-tab">📄 Raw</button>
+            <button id="tabLeftMinified" class="pane-tab">⚡ Min</button>
+          </div>
+        </div>
+
+        <!-- Left Pane Source Path & Actions Bar -->
+        <div class="pane-sub-bar">
+          <div class="source-info" title="Source Origin Path">
+            <span class="source-label">Source:</span>
+            <span class="source-value" id="sourceLeftValue">Selected Text / Input A</span>
+            <span id="statusLeftBadge" class="pane-status-badge hidden">⏳ Processing...</span>
+          </div>
+          <div class="pane-actions">
+            <button id="btnOpenFileLeft" class="btn btn-secondary btn-sm" title="Open JSON file from your computer">📁 Open</button>
+            <button id="btnCopyLeft" class="btn btn-secondary btn-sm">Copy</button>
+            <button id="btnSaveLeft" class="btn btn-secondary btn-sm">Save</button>
+            <input type="file" id="fileInputLeft" accept=".json,.txt,.log,application/json" style="display: none;">
+          </div>
+        </div>
+
+        <!-- Left Path Indicator Bar -->
+        <div class="pane-path-bar">
+          <span class="path-label">Selected Path:</span>
+          <span class="path-value" id="pathLeftValue">root</span>
+        </div>
+
+        <!-- Left Panels Content -->
+        <div class="pane-content">
+          <!-- Left Panel 1: Tree View -->
+          <div id="panelLeftTree" class="pane-panel">
+            <div id="jsonTreeRootLeft" class="json-tree-root"></div>
+          </div>
+
+          <!-- Left Panel 2: Code Editor -->
+          <div id="panelLeftEditor" class="pane-panel active">
+            <div class="inline-editor-toolbar">
+              <div class="editor-actions">
+                <button id="btnLeftCopySub" class="btn btn-accent btn-sm hidden" title="Copy Selected Sub-JSON Block">📋 Copy Sub-JSON</button>
+                <button id="btnLeftUndo" class="btn btn-secondary btn-sm icon-only-btn" disabled title="Undo (Ctrl+Z)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                </button>
+                <button id="btnLeftRedo" class="btn btn-secondary btn-sm icon-only-btn" disabled title="Redo (Ctrl+Y)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg>
+                </button>
+                <button id="btnLeftPaste" class="btn btn-secondary btn-sm" title="Paste text from Clipboard into Editor">📋 Paste</button>
+                <button id="btnLeftClear" class="btn btn-secondary btn-sm">Clear</button>
+                <button id="btnLeftFormat" class="btn btn-secondary btn-sm">Format</button>
+                <button id="btnLeftMinify" class="btn btn-secondary btn-sm">Minify</button>
+                <button id="btnLeftWrap" class="btn btn-secondary btn-sm" title="Toggle Fixed Width / Word Wrap">Width: Wrap</button>
+                <button id="btnLeftApply" class="btn btn-primary btn-sm">Apply & Render</button>
+              </div>
+            </div>
+            <div id="leftEditError" class="editor-error-banner hidden"></div>
+            <div class="code-editor-container wrap-width">
+              <div id="leftLineNumbers" class="editor-line-numbers">1</div>
+              <div class="editor-textarea-wrapper">
+                <div id="leftBracketOverlay" class="editor-bracket-overlay"></div>
+                <svg id="leftGuideCanvas" class="editor-guide-svg"></svg>
+                <textarea id="leftTextarea" class="inline-editor-textarea" placeholder="Paste or edit Left JSON here..." spellcheck="false"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Left Panel 3: Raw JSON -->
+          <div id="panelLeftRaw" class="pane-panel">
+            <pre id="rawLeftContent" class="code-block"></pre>
+          </div>
+
+          <!-- Left Panel 4: Minified JSON -->
+          <div id="panelLeftMinified" class="pane-panel">
+            <pre id="minifiedLeftContent" class="code-block"></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Center Splitter Divider -->
+      <div class="pane-divider" id="paneDivider" title="Drag to resize split view"></div>
+
+      <!-- RIGHT SECTION / PANE -->
+      <section class="pane-section pane-right" id="paneRight">
+        <!-- Right Drag & Drop Overlay -->
+        <div class="drag-drop-overlay" id="dragOverlayRight">
+          <div class="drag-drop-message">
+            <span class="drag-icon">📥</span>
+            <h3>Drop JSON File Here</h3>
+            <p>Release to open & beautify in Right Pane</p>
+          </div>
+        </div>
+
+        <!-- Right Section Header -->
+        <div class="pane-header">
+          <div class="pane-title">
+            <span class="pane-badge right-badge">RIGHT PANE</span>
+          </div>
+          <div class="pane-tabs right-tabs">
+            <button id="tabRightTree" class="pane-tab">🌳 Tree</button>
+            <button id="tabRightEditor" class="pane-tab active">✏️ Editor</button>
+            <button id="tabRightRaw" class="pane-tab">📄 Raw</button>
+            <button id="tabRightMinified" class="pane-tab">⚡ Min</button>
+          </div>
+        </div>
+
+        <!-- Right Pane Source Path & Actions Bar -->
+        <div class="pane-sub-bar">
+          <div class="source-info" title="Source Origin Path">
+            <span class="source-label">Source:</span>
+            <span class="source-value" id="sourceRightValue">Manual Input / Input B</span>
+            <span id="statusRightBadge" class="pane-status-badge hidden">⏳ Processing...</span>
+          </div>
+          <div class="pane-actions">
+            <button id="btnOpenFileRight" class="btn btn-secondary btn-sm" title="Open JSON file from your computer">📁 Open</button>
+            <button id="btnCopyRight" class="btn btn-secondary btn-sm">Copy</button>
+            <button id="btnSaveRight" class="btn btn-secondary btn-sm">Save</button>
+            <input type="file" id="fileInputRight" accept=".json,.txt,.log,application/json" style="display: none;">
+          </div>
+        </div>
+
+        <!-- Right Path Indicator Bar -->
+        <div class="pane-path-bar">
+          <span class="path-label">Selected Path:</span>
+          <span class="path-value" id="pathRightValue">root</span>
+        </div>
+
+        <!-- Right Panels Content -->
+        <div class="pane-content">
+          <!-- Right Panel 1: Tree View -->
+          <div id="panelRightTree" class="pane-panel">
+            <div id="jsonTreeRootRight" class="json-tree-root"></div>
+          </div>
+
+          <!-- Right Panel 2: Code Editor -->
+          <div id="panelRightEditor" class="pane-panel active">
+            <div class="inline-editor-toolbar">
+              <div class="editor-actions">
+                <button id="btnRightCopySub" class="btn btn-accent btn-sm hidden" title="Copy Selected Sub-JSON Block">📋 Copy Sub-JSON</button>
+                <button id="btnRightUndo" class="btn btn-secondary btn-sm icon-only-btn" disabled title="Undo (Ctrl+Z)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                </button>
+                <button id="btnRightRedo" class="btn btn-secondary btn-sm icon-only-btn" disabled title="Redo (Ctrl+Y)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg>
+                </button>
+                <button id="btnRightPaste" class="btn btn-secondary btn-sm" title="Paste text from Clipboard into Editor">📋 Paste</button>
+                <button id="btnRightClear" class="btn btn-secondary btn-sm">Clear</button>
+                <button id="btnRightFormat" class="btn btn-secondary btn-sm">Format</button>
+                <button id="btnRightMinify" class="btn btn-secondary btn-sm">Minify</button>
+                <button id="btnRightWrap" class="btn btn-secondary btn-sm" title="Toggle Fixed Width / Word Wrap">Width: Wrap</button>
+                <button id="btnRightApply" class="btn btn-primary btn-sm">Apply & Render</button>
+              </div>
+            </div>
+            <div id="rightEditError" class="editor-error-banner hidden"></div>
+            <div class="code-editor-container wrap-width">
+              <div id="rightLineNumbers" class="editor-line-numbers">1</div>
+              <div class="editor-textarea-wrapper">
+                <div id="rightBracketOverlay" class="editor-bracket-overlay"></div>
+                <svg id="rightGuideCanvas" class="editor-guide-svg"></svg>
+                <textarea id="rightTextarea" class="inline-editor-textarea" placeholder="Paste or edit Right JSON here..." spellcheck="false"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Panel 3: Raw JSON -->
+          <div id="panelRightRaw" class="pane-panel">
+            <pre id="rawRightContent" class="code-block"></pre>
+          </div>
+
+          <!-- Right Panel 4: Minified JSON -->
+          <div id="panelRightMinified" class="pane-panel">
+            <pre id="minifiedRightContent" class="code-block"></pre>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- App Footer -->
+    <footer class="app-footer">
+      <em>Crafted by Sanith</em>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast-popup hidden"></div>
+  </div>
+
+  <script src="viewer.js"></script>
+</body>
+</html>

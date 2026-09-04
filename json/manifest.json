@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "JSON Beautifier & Viewer",
+  "version": "1.0.0",
+  "description": "Select JSON text on any page and press Ctrl+Shift to inspect, format, expand, and collapse JSON in real-time.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "commands": {
+    "format_selected_json": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+J",
+        "mac": "Command+Shift+J"
+      },
+      "description": "Format and view selected JSON"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["viewer.html", "icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
